@@ -90,3 +90,37 @@ class Database(object):
         return dict(secret=secret, ident=ident, pubchans=pubchans,
             subchans=subchans, owner=owner
         )
+
+    def add_user(self, data):
+        query = "insert into authkeys (ident, secret, pubchans, subchans) values (?, ?, ?, ?)"
+        try:
+            with self.sql:
+                self.sql.execute(query, data)
+            return True
+        except:
+            import traceback
+            traceback.print_exc()
+            return False
+    
+    def get_users(self):
+        c = self.sql.cursor()
+        query = "select * from authkeys"
+        try:
+            c.execute(query)
+            result = c.fetchall()
+
+            if not result: return None
+            data = []
+            for row in result:
+                _id, owner, ident, secret, pubchans, subchans = row
+                pubchans = json.loads(pubchans)
+                subchans = json.loads(subchans)
+                data.append({"id":_id, "owner":owner, "ident":ident, "secret":secret, "publish_channels":pubchans, "subscribe_channels":subchans})
+            return data
+        except:
+            import traceback
+            traceback.print_exc()
+            return False
+        finally:
+            c.close()
+
