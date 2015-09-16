@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import pymongo
+import database
+import json
 import sys
 
 def handle_list(arg):
@@ -18,20 +19,13 @@ secret = sys.argv[2]
 publish = handle_list(sys.argv[3])
 subscribe = handle_list(sys.argv[4])
 
-rec = {
-    "identifier": ident,
-    "secret": secret,
-    "publish": publish,
-    "subscribe":subscribe
-}
+#insert into authkeys (ident, secret, pubchans, subchans)
+data = (ident, secret, json.dumps(publish), json.dumps(subscribe))
 
-client = pymongo.MongoClient()
-res = client.hpfeeds.auth_key.update({"identifier": ident}, {"$set": rec}, upsert=True)
-client.fsync()
-client.disconnect()
+db = database.Database()
+done = db.add_user(data)
 
-if res['updatedExisting']:
-    print "updated %s"%rec
+if done:
+    print "Inserted successfull!"
 else:
-    print "inserted %s"%(rec)
-
+    print "Error"
