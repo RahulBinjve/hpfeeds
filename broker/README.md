@@ -27,5 +27,5 @@ Updating a user:
 
 ## Running the Broker
 
-	$ python feedbroker.py
+	$ python broker.py
 
