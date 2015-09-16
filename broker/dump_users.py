@@ -1,10 +1,10 @@
 #!/usr/bin/python
 
-import pymongo
 import sys
+import database
+import pprint
 
-client = pymongo.MongoClient()
-for doc in client.hpfeeds.auth_key.find():
-    print doc
+db_object = database.Database()
+data = db_object.get_users()
 
-
+pprint.pprint(data)
